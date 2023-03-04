@@ -1,9 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config = {
   darkMode: 'class',
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
       colors: {
@@ -26,13 +25,30 @@ const config = {
         xxs: '0.65rem',
       },
       fontFamily: {
-        inter: ['Inter', ...defaultTheme.fontFamily.sans],
-        lexend: ['Lexend', ...defaultTheme.fontFamily.sans],
-        code: ['Fira Code', ...defaultTheme.fontFamily.mono],
+        sans: [
+          '"InterVariable"',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          '"Noto Sans"',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+          '"Noto Color Emoji"',
+        ],
+        lexend: ['Lexend'],
+        code: ['Fira Code'],
       },
     },
   },
-  plugins: [],
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  plugins: [require('tailwind-scrollbar')({ nocompatible: true })],
 };
 
 module.exports = config;
