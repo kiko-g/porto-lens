@@ -3,7 +3,7 @@ import { type Season } from '~/@types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const s3 = new S3({
-  region: process.env.AWS_REGION || 'eu-west-3',
+  region: process.env.AWS_S3_REGION_NAME || 'eu-west-3',
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
@@ -25,7 +25,7 @@ const getDataFromS3 = async (bucketName: string, object: S3.Object): Promise<Sea
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const bucketName = process.env.S3_BUCKET_NAME || 'vsports';
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || 'vsports';
     const data = await s3.listObjectsV2({ Bucket: bucketName }).promise();
 
     if (!data.Contents) {
