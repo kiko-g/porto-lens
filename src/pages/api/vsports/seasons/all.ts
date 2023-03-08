@@ -3,7 +3,7 @@ import { type Season } from '~/@types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const s3 = new S3({
-  region: process.env.AWS_S3_BUCKET_NAME || 'eu-west-3',
+  region: process.env.AWS_S3_REGION_NAME,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
