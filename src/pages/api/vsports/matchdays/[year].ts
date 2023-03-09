@@ -36,7 +36,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const content = objectData.Body.toString();
     const season = JSON.parse(content) as Season;
 
-    res.status(200).json(season);
+    const matchdays = {
+      season: season.season_span,
+      matchdays: season.matchdays,
+    };
+
+    res.status(200).json(matchdays);
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';

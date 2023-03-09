@@ -7,10 +7,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const s3 = estabilishS3Connection();
     const bucketName = process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME || 'vsports';
     const secondYearStr = req.query.year as string;
+    const matchdayIndexStr = req.query.number as string;
 
     const secondYear = parseInt(secondYearStr);
     if (isNaN(secondYear)) {
       throw new Error(`Invalid year: ${secondYearStr}`);
+    }
+
+    const matchdayIndex = parseInt(matchdayIndexStr);
+    if (isNaN(matchdayIndex)) {
+      throw new Error(`Invalid matchday number: ${matchdayIndexStr}`);
     }
 
     const objects = await s3.listObjectsV2({ Bucket: bucketName }).promise();
@@ -36,7 +42,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const content = objectData.Body.toString();
     const season = JSON.parse(content) as Season;
 
-    res.status(200).json(season);
+    if (season.matchdays.length === 0) {
+      throw new Error(`No matchdays for the request season (${secondYear - 1}/${secondYear})`);
+    }
+
+    if (matchdayIndex < 1 || matchdayIndex > season.matchdays.length) {
+      throw new Error(`Matchday number must be between 1 and ${season.matchdays.length}`);
+    }
+
+    const matchday = {
+      season: season.season_span,
+      matchday: season.matchdays[matchdayIndex],
+    };
+
+    res.status(200).json(matchday);
   } catch (error) {
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';

@@ -1,15 +1,15 @@
-import { S3 } from 'aws-sdk';
-import { type Season } from '~/@types';
+import type { Matchday, Season } from '~/@types';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { estabilishS3Connection } from '~/utils/s3';
 
-const s3 = new S3({
-  region: process.env.NEXT_PUBLIC_AWS_S3_REGION_NAME,
-  accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
-});
+type SeasonMatchdays = {
+  season: string;
+  matchdays: Matchday[];
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
+    const s3 = estabilishS3Connection();
     const bucketName = process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME || 'vsports';
     const data = await s3.listObjectsV2({ Bucket: bucketName }).promise();
 
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const objects = await Promise.all(
-      data.Contents.map(async (object): Promise<Season | null> => {
+      data.Contents.map(async (object): Promise<SeasonMatchdays | null> => {
         if (!object.Key) return null;
         const objectData = await s3
           .getObject({
@@ -30,13 +30,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!objectData.Body) return null;
 
         const content = objectData.Body.toString();
-        return JSON.parse(content) as Season;
+        const season = JSON.parse(content) as Season;
+
+        return {
+          season: season.season_span,
+          matchdays: season.matchdays,
+        };
       })
     );
 
     res.status(200).json(objects);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    res.status(500).json({ message: errorMessage });
   }
 }

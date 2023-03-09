@@ -49,10 +49,7 @@ const Home: NextPage = () => {
               {hello.data ? hello.data.greeting : 'Loading tRPC query...'}
             </p>
             <Link className="hover:underline" href="/api/vsports/seasons/2023">
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how to deploy it.
-              </div>
+              Try the Vsports API
             </Link>
             <AuthShowcase />
           </div>
