@@ -1,12 +1,31 @@
 import { type NextPage } from 'next';
+import type { ClubSeasonGames, Game } from '~/@types';
 import Head from 'next/head';
 import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 import { api } from '~/utils/api';
 import DarkModeSwitch from '../components/layout/DarkModeSwitch';
+import GameShowcase from '~/components/GameShowcase';
 
 const Home: NextPage = () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('api/vsports/games/2023/club/fcporto')
+      .then((res) => res.json())
+      .then((data: ClubSeasonGames) => {
+        if (data.games.length > 0) {
+          setGames(data.games);
+          setLoading(false);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <>
       <Head>

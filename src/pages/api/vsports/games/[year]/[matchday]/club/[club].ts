@@ -1,6 +1,7 @@
 import type { Season } from '~/@types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { estabilishS3Connection } from '~/utils/s3';
+import { normalizeClubName } from '~/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -9,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const secondYearStr = req.query.year as string;
     const matchdayIndexStr = req.query.matchday as string;
     const clubStr = req.query.club as string;
+    const club = normalizeClubName(clubStr);
 
     const secondYear = parseInt(secondYearStr);
     if (isNaN(secondYear)) {
@@ -54,12 +56,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const games = season.matchdays[matchdayIndex]?.games;
     const clubGame = games?.find(
       (game) =>
-        game.home_team.replace(/\s/g, '').toLowerCase() === clubStr ||
-        game.away_team.replace(/\s/g, '').toLowerCase() === clubStr
+        game.home_team.replace(/\s/g, '').toLowerCase() === club ||
+        game.away_team.replace(/\s/g, '').toLowerCase() === club
     );
 
     if (!clubGame) {
-      throw new Error(`No games found for the request club (${clubStr})`);
+      throw new Error(`No games found for the request club (${club})`);
     }
 
     const matchdayGames = {

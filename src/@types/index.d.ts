@@ -36,3 +36,9 @@ export type Video = {
   share_url: string;
   embed: string;
 };
+
+export type ClubSeasonGames = {
+  season: string;
+  club: string;
+  games: Game[];
+};
